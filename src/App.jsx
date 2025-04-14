@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import "./App.css";
+import animation from "js-confetti";
 
 function App() {
   const[task,setTask]=useState([]);
@@ -12,13 +13,24 @@ function App() {
     setTask([...task])
   }
 
-  const CompletedTask=(place)=>{
+  const completeTheTask=(place) =>{
    setTimeout(() => {
+    const ani=new animation()
     let t=task.splice(place,1)
    setCompleted([...completed,t])
-   setTask([...task])
    setCb(false)
-   }, 250);
+   setTask([...task])
+   ani.addConfetti()
+   }, 250)
+  }
+
+  const undoTask=(place)=>{
+    setTimeout(()=>{
+      let t=completed.splice(place,1);
+      setCompleted([...completed])
+      setTask([...task,t])
+    },250)
+  
   }
   return (
     <>
@@ -44,7 +56,10 @@ function App() {
             <h1>On Going Task</h1>
             {task.map((item,index)=>
               <div className='rendered-task'>
-                <input type="checkbox" id={index} onChange={()=>CompletedTask(index)} checked={cb}/>
+                 <input type='checkbox'
+                    checked={cb}
+                    onChange={()=>{completeTheTask(index)}}
+                    />
                 <li key={index}>{item}</li>
                 <img src="./edit.png" alt="img not available" width={30} onClick={()=>{
                   let edited_value=prompt("Edit the text "+item)
@@ -57,7 +72,13 @@ function App() {
           </div>
           <div className='completed'>
             <h1 >Completed Task</h1>
-            {completed.map((item)=><li key={index}>{item}</li>)}
+            {completed.map((item,index)=>
+            <div id="undo"> 
+              <button id="undo-btn" onClick={()=>{undoTask(index)}}>Undo</button>
+               <li key={index}>{item}</li>
+            </div>
+            
+            )}
           </div>
         </div>
     </div>
